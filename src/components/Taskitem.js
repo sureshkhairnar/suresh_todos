@@ -6,13 +6,9 @@ import {
   DialogTitle,
   Button,
   Typography,
-  IconButton,
   Grid,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
-import Swal from "sweetalert2";
 
 const TaskItem = ({ open, onClose, task }) => {
   return (
