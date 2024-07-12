@@ -15,6 +15,7 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Todo");
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (selectedTask) {
@@ -27,10 +28,21 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
     }
   }, [selectedTask]);
 
+  const validate = () => {
+    let tempErrors = {};
+    if (!title) tempErrors.title = "Title is required.";
+    if (!description) tempErrors.description = "Description is required.";
+    if (!status) tempErrors.status = "Status is required.";
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ ...selectedTask, title, description, status });
-    clearForm();
+    if (validate()) {
+      onSubmit({ ...selectedTask, title, description, status });
+      clearForm();
+    }
   };
 
   const clearForm = () => {
@@ -38,6 +50,20 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
     setDescription("");
     setStatus("Todo");
     setIsEditing(false);
+  };
+
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+    if (errors.title) {
+      setErrors((prevErrors) => ({ ...prevErrors, title: "" }));
+    }
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    if (errors.description) {
+      setErrors((prevErrors) => ({ ...prevErrors, description: "" }));
+    }
   };
 
   return (
@@ -50,13 +76,14 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                required
                 fullWidth
                 id="title"
                 label="Title"
                 variant="outlined"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleTitleChange}
+                error={!!errors.title}
+                helperText={errors.title}
               />
             </Grid>
             <Grid item xs={12}>
@@ -67,7 +94,9 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
                 label="Description"
                 variant="outlined"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleDescriptionChange}
+                error={!!errors.description}
+                helperText={errors.description}
               />
             </Grid>
             <Grid item xs={12}>
@@ -79,6 +108,8 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
                 variant="outlined"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
+                error={!!errors.status}
+                helperText={errors.status}
               >
                 <MenuItem value="Todo">To Do</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
