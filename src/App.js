@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   getAllTasks,
   createTask,
@@ -9,6 +9,7 @@ import {
 import TaskForm from "./components/Taskform";
 import TaskList from "./components/Tasklist";
 import { Container, Typography, Grid } from "@mui/material";
+import Swal from "sweetalert2";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
@@ -39,9 +40,22 @@ const App = () => {
         );
         setTasks(sortedTasks);
         setSelectedTask(null);
+        Swal.fire({
+          icon: "success",
+          title: "Task Created Successfully",
+          showConfirmButton: false,
+          timer: 2000,
+        }).then(() => {
+          scrollToTaskList();
+        });
       })
       .catch((error) => {
         console.error("Error creating task:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error,
+        });
       });
   };
 
@@ -56,9 +70,22 @@ const App = () => {
         );
         setTasks(sortedTasks);
         setSelectedTask(null);
+        Swal.fire({
+          icon: "success",
+          title: "Task Updated Successfully",
+          showConfirmButton: false,
+          timer: 2000,
+        }).then(() => {
+          scrollToTaskList();
+        });
       })
       .catch((error) => {
         console.error("Error updating task:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error,
+        });
       });
   };
 
@@ -72,6 +99,13 @@ const App = () => {
       .catch((error) => {
         console.error("Error deleting task:", error);
       });
+  };
+
+  const scrollToTaskList = () => {
+    window.scrollTo({
+      top: 200,
+      behavior: "smooth",
+    });
   };
 
   // const handleAllDeleteTasks = () => {

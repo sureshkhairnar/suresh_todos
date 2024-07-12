@@ -20,7 +20,7 @@ export const createTask = (newTask) => {
 };
 
 export const updateTask = (id, updatedTask) => {
-  return api.patch(`/tasks/${id}`, updatedTask);
+  return api.put(`/tasks/${id}`, updatedTask);
 };
 
 export const deleteTask = (id) => {

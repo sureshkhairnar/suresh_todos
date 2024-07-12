@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -81,6 +81,13 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
     setIsDialogOpen(false);
   };
 
+  const scrollToTaskForm = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const filteredTasks = tasks.filter((task) => {
     if (statusFilter === "All") {
       return true;
@@ -154,6 +161,7 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
                           onClick={(e) => {
                             e.stopPropagation();
                             onTaskSelect(task);
+                            scrollToTaskForm();
                           }}
                         >
                           <EditIcon />
