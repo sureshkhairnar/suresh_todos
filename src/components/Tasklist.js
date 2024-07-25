@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -25,7 +25,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DoneIcon from "@mui/icons-material/Done";
 import EditIcon from "@mui/icons-material/Edit";
 import Swal from "sweetalert2";
-import TaskItem from "./Taskitem";
 
 const StyledTable = styled(Table)(({ theme }) => ({
   minWidth: 650,
@@ -64,6 +63,12 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         onDelete(taskId);
+
+        Swal.fire({
+          title: "Success",
+          text: "Task deleted successfully",
+          icon: "success",
+        });
       }
     });
   };
@@ -81,7 +86,11 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
     setIsDialogOpen(false);
   };
 
-  const scrollToTaskForm = () => {
+  const handleEditClick = (task, e) => {
+    e.stopPropagation();
+    onTaskSelect(task);
+
+    // Smooth scroll to the top of the page
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -158,11 +167,7 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
                       <Grid item>
                         <IconButton
                           aria-label="edit"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onTaskSelect(task);
-                            scrollToTaskForm();
-                          }}
+                          onClick={(e) => handleEditClick(task, e)}
                         >
                           <EditIcon />
                         </IconButton>
@@ -196,7 +201,7 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
       </TableContainer>
 
       <Dialog open={isDialogOpen} onClose={handleCloseDialog} fullWidth>
-        {/* <DialogTitle>{selectedTask?.title}</DialogTitle>
+        <DialogTitle>{selectedTask?.title}</DialogTitle>
         <DialogContent dividers>
           <Typography variant="body1">
             <strong>Status:</strong> {selectedTask?.status}
@@ -204,12 +209,7 @@ const TaskList = ({ tasks, onTaskSelect, onDelete }) => {
           <Typography variant="body1">
             <strong>Description:</strong> {selectedTask?.description}
           </Typography>
-        </DialogContent> */}
-        <TaskItem
-          open={isDialogOpen}
-          task={selectedTask}
-          onClose={handleCloseDialog}
-        />
+        </DialogContent>
         <Button onClick={handleCloseDialog} color="primary">
           Close
         </Button>

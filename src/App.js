@@ -60,33 +60,32 @@ const App = () => {
   };
 
   const handleUpdateTask = (updatedTask) => {
-    updateTask(updatedTask._id, updatedTask)
-      .then((response) => {
-        const updatedTasks = tasks.map((task) =>
-          task._id === updatedTask._id ? response.data : task
-        );
-        const sortedTasks = updatedTasks.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setTasks(sortedTasks);
-        setSelectedTask(null);
-        Swal.fire({
-          icon: "success",
-          title: "Task Updated Successfully",
-          showConfirmButton: false,
-          timer: 2000,
-        }).then(() => {
-          scrollToTaskList();
-        });
-      })
-      .catch((error) => {
-        console.error("Error updating task:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: error,
-        });
-      });
+    updateTask(updatedTask._id, updatedTask).then((response) => {
+      const updatedTasks = tasks.map((task) =>
+        task._id === updatedTask._id ? response.data : task
+      );
+      const sortedTasks = updatedTasks.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setTasks(sortedTasks);
+      setSelectedTask(null);
+      //   Swal.fire({
+      //     icon: "success",
+      //     title: "Task Updated Successfully",
+      //     showConfirmButton: false,
+      //     timer: 2000,
+      //   }).then(() => {
+      //     scrollToTaskList();
+      //   });
+      // })
+      // .catch((error) => {
+      //   console.error("Error updating task:", error);
+      //   Swal.fire({
+      //     icon: "error",
+      //     title: "Oops...",
+      //     text: error,
+      //   });
+    });
   };
 
   const handleDeleteTask = (id) => {

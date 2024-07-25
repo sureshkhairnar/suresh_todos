@@ -9,13 +9,18 @@ import {
   MenuItem,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import Swal from "sweetalert2";
 
 const TaskForm = ({ onSubmit, selectedTask }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Todo");
   const [isEditing, setIsEditing] = useState(false);
-  const [errors, setErrors] = useState({});
+
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+  });
 
   useEffect(() => {
     if (selectedTask) {
@@ -28,21 +33,100 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
     }
   }, [selectedTask]);
 
-  const validate = () => {
-    let tempErrors = {};
-    if (!title) tempErrors.title = "Title is required.";
-    if (!description) tempErrors.description = "Description is required.";
-    if (!status) tempErrors.status = "Status is required.";
+  const validateForm = () => {
+    let tempErrors = { title: "", description: "" };
+    let isValid = true;
+
+    const titleChars = title.split("").filter((char) => char.length > 0);
+    const descriptionChars = description
+      .split("")
+      .filter((char) => char.length > 0);
+
+    if (!title) {
+      tempErrors.title = "Title is required.";
+      isValid = false;
+    } else if (titleChars.length < 5) {
+      tempErrors.title = "Title must be at least 5 chars long.";
+      isValid = false;
+    } else if (titleChars.length > 100) {
+      tempErrors.title = "Title must be at most 100 chars long.";
+      isValid = false;
+    }
+
+    if (!description) {
+      tempErrors.description = "Description is required.";
+      isValid = false;
+    } else if (descriptionChars.length < 10) {
+      tempErrors.description = "Description must be at least 10 chars long.";
+      isValid = false;
+    } else if (descriptionChars.length > 500) {
+      tempErrors.description = "Description must be at most 500 chars long.";
+      isValid = false;
+    }
+
     setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
+    return isValid;
+  };
+
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+    validateTitle(e.target.value);
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    validateDescription(e.target.value);
+  };
+
+  const validateTitle = (value) => {
+    const titleChars = value.split("").filter((char) => char.length > 0);
+    let titleError = "";
+    if (!value) {
+      titleError = "Title is required.";
+    } else if (titleChars.length < 5) {
+      titleError = "Title must be at least 5 chars long.";
+    } else if (titleChars.length > 100) {
+      titleError = "Title must be at most 100 chars long.";
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, title: titleError }));
+  };
+
+  const validateDescription = (value) => {
+    const descriptionChars = value.split("").filter((char) => char.length > 0);
+    let descriptionError = "";
+    if (!value) {
+      descriptionError = "Description is required.";
+    } else if (descriptionChars.length < 10) {
+      descriptionError = "Description must be at least 10 chars long.";
+    } else if (descriptionChars.length > 500) {
+      descriptionError = "Description must be at most 500 chars long.";
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      description: descriptionError,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validate()) {
-      onSubmit({ ...selectedTask, title, description, status });
-      clearForm();
-    }
+
+    if (!validateForm()) return;
+
+    const action = selectedTask ? "update" : "create";
+
+    onSubmit({ ...selectedTask, title, description, status });
+
+    Swal.fire({
+      title: action === "create" ? "To-Do Created" : "To-Do Updated",
+      text:
+        action === "create"
+          ? "Your to-do has been created successfully."
+          : "Your to-do has been updated successfully.",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+
+    clearForm();
   };
 
   const clearForm = () => {
@@ -50,20 +134,7 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
     setDescription("");
     setStatus("Todo");
     setIsEditing(false);
-  };
-
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-    if (errors.title) {
-      setErrors((prevErrors) => ({ ...prevErrors, title: "" }));
-    }
-  };
-
-  const handleDescriptionChange = (e) => {
-    setDescription(e.target.value);
-    if (errors.description) {
-      setErrors((prevErrors) => ({ ...prevErrors, description: "" }));
-    }
+    setErrors({ title: "", description: "" });
   };
 
   return (
@@ -108,8 +179,6 @@ const TaskForm = ({ onSubmit, selectedTask }) => {
                 variant="outlined"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                error={!!errors.status}
-                helperText={errors.status}
               >
                 <MenuItem value="Todo">To Do</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
